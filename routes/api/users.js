@@ -21,7 +21,7 @@ router.post('/create', [
     async (req,res) => {
         const errors = validateResult(req)
         if (!errors.isEmpty()){
-            return res.status(400).json({errors: errors.array()})
+            return res.status(400).json({success:false, errors: errors.array()})
         }
         
         const { name, email, password } = req.body
@@ -30,6 +30,7 @@ router.post('/create', [
             let user = await User.findOne({name,email})
             if (user){
                 return res.status(400).json({
+                    success:false,
                     errors: [{
                         msg: "User already exists"
                     }]
@@ -62,7 +63,7 @@ router.post('/create', [
                 },
                 (err,token) => {
                     if (err) throw err
-                    return res.json({ token })
+                    return res.json({success:true, token })
                 }
             )
 
@@ -72,7 +73,7 @@ router.post('/create', [
 
         }catch(err){
             console.error(err.message)
-            res.status(500).json({errors:err.message})
+            res.status(500).json({success:true,errors:err.message})
         }
 
 })

@@ -8,18 +8,28 @@ import bcrypt from "bcryptjs"
 const router = express.Router()
 
 
-// @route GET api/auth
-// @desc login 
-// @access 
+// @route   GET api/auth
+// @desc    returns user model from database using jwt
+// @access  Private
 router.get('/',auth, async (req,res) => {
     try{
         const user = await User.findById(req.user.id).select('-pasword')
-        res.json(user)
+        res.json({success:true,user})
     }catch(err){
         console.log(err.message)
-        res.status(500).send("Server error.")
+        res.status(500).json({
+            success:false,
+            errors:[{
+                msg:"Server Error"
+            }]
+        })
     }
 })
+
+
+// @route   GET api/auth
+// @desc    returns user model from database using jwt
+// @access  Private
 
 router.post('/', [
     validator.check('email',"Please include a valid email").isEmail(),
@@ -29,7 +39,7 @@ router.post('/', [
         
         const errors = validator.validationResult(req)
         if (!errors.isEmpty()){
-            return res.status(400).json({errors: errors.array()})
+            return res.status(400).json({success:false,errors: errors.array()})
         }
         
         const { email, password } = req.body
@@ -38,7 +48,8 @@ router.post('/', [
             let user = await User.findOne({email})
             if (!user){
                 return res.status(400).json({
-                    error: [{
+                    success:false,
+                    errors: [{
                         msg: "Invalid credentials"
                     }]
                 })
@@ -47,7 +58,7 @@ router.post('/', [
             const isMatch = await bcrypt.compare(password, user.password)
 
             if (!isMatch){
-                return res.status(400).json({error:[{msg:"Invalid credentials"}]})
+                return res.status(400).json({success:false,errors:[{msg:"Invalid credentials"}]})
             }
             const payload = {
                 user: {
@@ -63,7 +74,7 @@ router.post('/', [
                 },
                 (err,token) => {
                     if (err) throw err
-                    return res.json({ token })
+                    return res.json({ success:true,token })
                 }
             )
 
@@ -71,7 +82,12 @@ router.post('/', [
 
         }catch(err){
             console.error(err.message)
-            return res.status(500).json({errors:err.message})
+            res.status(500).json({
+                success:false,
+                errors:[{
+                    msg:"Server Error"
+                }]
+            })
         }
 
 })
