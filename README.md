@@ -4,7 +4,7 @@ This is a sample project for learning NodeJs with basic monolithic architecture.
 
 # Configuration 
 
-For setting up the server rename "sample_default.json" file to "default.json". Add global configuration variables "mongoURI" (Remote database connection), "githubClientId", and "githubClientSecret" (github application variables, found on Dev Settings) with proper values. 
+</p>For setting up the server rename "sample_default.json" file to "default.json". Then add global configuration variables "mongoURI" (remote database connection), "githubClientId", and "githubClientSecret" (github application variables, found on Dev Settings) with proper values. </p>
 
 # Initialize server 
 
